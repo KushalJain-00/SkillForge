@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://your-backend-url.com/api';
+const FRONTEND_ONLY_MODE = import.meta.env.VITE_FRONTEND_ONLY_MODE === 'true';
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -37,6 +38,9 @@ api.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/signin';
+    } else if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
+      // Handle network errors gracefully
+      console.warn('Network error - backend may be unavailable:', error.message);
     }
     return Promise.reject(error);
   }

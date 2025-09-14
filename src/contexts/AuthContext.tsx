@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
           
-          // Verify token is still valid
+          // Try to verify token, but don't fail if backend is unavailable
           try {
             const response = await authAPI.getMe();
             if (response.data.success) {
@@ -99,8 +99,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               clearAuthState();
             }
           } catch (error) {
-            // Token is invalid, clear auth state
-            clearAuthState();
+            // If backend is unavailable, keep user logged in with stored data
+            console.warn('Backend unavailable, using stored auth data:', error);
+            // Don't clear auth state if it's just a network error
           }
         }
       } catch (error) {

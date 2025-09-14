@@ -1,7 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 
 // Socket configuration
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://your-backend-url.com';
+const FRONTEND_ONLY_MODE = import.meta.env.VITE_FRONTEND_ONLY_MODE === 'true';
 
 class SocketService {
   private socket: Socket | null = null;
@@ -14,6 +15,13 @@ class SocketService {
     }
 
     this.token = token;
+    
+    // Skip socket connection in frontend-only mode or if URL is not configured
+    if (FRONTEND_ONLY_MODE || !SOCKET_URL || SOCKET_URL === 'https://your-backend-url.com') {
+      console.warn('Socket connection skipped - frontend-only mode or URL not configured');
+      return;
+    }
+
     this.socket = io(SOCKET_URL, {
       auth: {
         token,
