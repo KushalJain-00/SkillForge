@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 10000,
     // Allow all hosts for preview mode (used by Render)
-    allowedHosts: ["all", "skillforge-bfue.onrender.com"],
+    allowedHosts: "all",
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
