@@ -1,316 +1,435 @@
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { usersAPI } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  User, 
   MapPin, 
   Calendar, 
   Mail, 
+  Globe, 
   Github, 
-  ExternalLink, 
-  Trophy, 
-  Star, 
+  Linkedin, 
+  Award, 
   BookOpen, 
+  Code, 
+  Users,
+  Star,
+  TrendingUp,
   Target,
-  Edit3,
-  Settings,
-  Award,
   Clock,
-  TrendingUp
+  Briefcase,
+  GraduationCap,
+  Edit,
+  ExternalLink
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 const Profile = () => {
-  const user = {
-    name: "Alex Johnson",
-    username: "alexdev",
-    email: "alex.johnson@email.com",
-    location: "San Francisco, CA",
-    joinDate: "January 2024",
-    bio: "Full-stack developer passionate about creating innovative solutions. Currently learning AI/ML and contributing to open-source projects.",
-    avatar: "AJ",
-    stats: {
-      projectsCompleted: 12,
-      skillBadges: 8,
-      learningStreak: 45,
-      totalXP: 2400,
-      rank: "Advanced Learner"
+  const { user: currentUser, isAuthenticated } = useAuth();
+  const [profileData, setProfileData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (currentUser) {
+        try {
+          const response = await usersAPI.getProfile(currentUser.username);
+          if (response.data.success) {
+            setProfileData(response.data.data);
+          } else {
+            // Fallback to current user data
+            setProfileData(currentUser);
+          }
+        } catch (error) {
+          console.error('Failed to fetch profile data:', error);
+          // Fallback to current user data
+          setProfileData(currentUser);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [currentUser]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="pt-20 px-6">
+          <div className="container mx-auto max-w-4xl">
+            <Card className="modern-card">
+              <CardContent className="p-8 text-center">
+                <h2 className="text-2xl font-bold mb-4">Please Sign In</h2>
+                <p className="text-muted-foreground mb-6">
+                  You need to be signed in to view your profile.
+                </p>
+                <Button asChild>
+                  <a href="/signin">Sign In</a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="pt-20 px-6">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Profile Card Skeleton */}
+              <div className="lg:col-span-1">
+                <Card className="modern-card">
+                  <CardContent className="p-6">
+                    <div className="text-center">
+                      <Skeleton className="w-24 h-24 rounded-full mx-auto mb-4" />
+                      <Skeleton className="h-6 w-32 mx-auto mb-2" />
+                      <Skeleton className="h-4 w-24 mx-auto mb-4" />
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-4 w-3/4 mx-auto" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Content Skeleton */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card className="modern-card">
+                  <CardContent className="p-6">
+                    <Skeleton className="h-6 w-48 mb-4" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-5/6 mb-2" />
+                    <Skeleton className="h-4 w-4/6" />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const user = profileData || currentUser;
+  const experienceLevel = user.experienceLevel || 'beginner';
+  const interests = user.interests || [];
+  const learningGoals = user.learningGoals || [];
+  const skills = user.skills || [];
+
+  const getExperienceColor = (level: string) => {
+    switch (level) {
+      case 'beginner': return 'bg-green-100 text-green-800';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
+      case 'advanced': return 'bg-orange-100 text-orange-800';
+      case 'expert': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const badges = [
-    { name: "React Master", color: "bg-blue-500", earned: "2 weeks ago" },
-    { name: "JavaScript Pro", color: "bg-yellow-500", earned: "1 month ago" },
-    { name: "Project Collaborator", color: "bg-green-500", earned: "3 weeks ago" },
-    { name: "Community Helper", color: "bg-purple-500", earned: "1 week ago" },
-    { name: "Code Reviewer", color: "bg-red-500", earned: "4 days ago" },
-    { name: "Quick Learner", color: "bg-indigo-500", earned: "2 months ago" },
-    { name: "Problem Solver", color: "bg-pink-500", earned: "1 month ago" },
-    { name: "Team Player", color: "bg-teal-500", earned: "3 weeks ago" }
-  ];
-
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Dashboard",
-      description: "React-based analytics dashboard with real-time data visualization",
-      tech: ["React", "TypeScript", "Chart.js"],
-      status: "Completed",
-      score: 95
-    },
-    {
-      id: 2,
-      title: "Task Management App",
-      description: "Full-stack application with user authentication and real-time updates",
-      tech: ["React", "Node.js", "MongoDB"],
-      status: "Completed",
-      score: 88
-    },
-    {
-      id: 3,
-      title: "AI Image Generator",
-      description: "Machine learning project using Stable Diffusion models",
-      tech: ["Python", "TensorFlow", "FastAPI"],
-      status: "In Progress",
-      score: null
+  const getTimeCommitmentText = (commitment: string) => {
+    switch (commitment) {
+      case '1-5': return '1-5 hours per week';
+      case '5-10': return '5-10 hours per week';
+      case '10-20': return '10-20 hours per week';
+      case '20+': return '20+ hours per week';
+      default: return 'Not specified';
     }
-  ];
-
-  const learningPath = [
-    { skill: "React Development", progress: 95, level: "Expert" },
-    { skill: "JavaScript", progress: 90, level: "Advanced" },
-    { skill: "Node.js", progress: 75, level: "Intermediate" },
-    { skill: "Python", progress: 60, level: "Intermediate" },
-    { skill: "Machine Learning", progress: 40, level: "Beginner" }
-  ];
-
-  const getProgressColor = (progress: number) => {
-    if (progress >= 80) return "bg-green-500";
-    if (progress >= 60) return "bg-yellow-500"; 
-    return "bg-blue-500";
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* Profile Header */}
-      <section className="pt-32 pb-16 px-6">
-        <div className="container mx-auto">
-          <div className="modern-card p-8 animate-fade-in">
-            <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
-              
-              {/* Avatar */}
-              <div className="relative">
-                <div className="w-32 h-32 bg-primary/20 rounded-full flex items-center justify-center text-4xl font-bold text-primary">
-                  {user.avatar}
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-2">
-                  <Clock className="w-4 h-4" />
-                </div>
-              </div>
+      {/* Main Content */}
+      <div className="pt-20 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Profile Card */}
+            <div className="lg:col-span-1">
+              <Card className="modern-card sticky top-24">
+                <CardContent className="p-6">
+                  <div className="text-center">
+                    <Avatar className="w-24 h-24 mx-auto mb-4">
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback className="text-2xl">
+                        {user.firstName?.[0]}{user.lastName?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <h1 className="text-2xl font-bold text-foreground mb-1">
+                      {user.firstName} {user.lastName}
+                    </h1>
+                    <p className="text-muted-foreground mb-4">@{user.username}</p>
+                    
+                    {user.bio && (
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {user.bio}
+                      </p>
+                    )}
 
-              {/* User Info */}
-              <div className="flex-1">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{user.totalXP || 0}</div>
+                        <div className="text-xs text-muted-foreground">Total XP</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{user.learningStreak || 0}</div>
+                        <div className="text-xs text-muted-foreground">Day Streak</div>
+                      </div>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div className="space-y-2 text-sm">
+                      {user.location && (
+                        <div className="flex items-center justify-center text-muted-foreground">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {user.location}
+                        </div>
+                      )}
+                      {user.website && (
+                        <div className="flex items-center justify-center">
+                          <Globe className="w-4 h-4 mr-2 text-muted-foreground" />
+                          <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                            Website
+                          </a>
+                        </div>
+                      )}
+                      {user.githubUrl && (
+                        <div className="flex items-center justify-center">
+                          <Github className="w-4 h-4 mr-2 text-muted-foreground" />
+                          <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                            GitHub
+                          </a>
+                        </div>
+                      )}
+                      {user.linkedinUrl && (
+                        <div className="flex items-center justify-center">
+                          <Linkedin className="w-4 h-4 mr-2 text-muted-foreground" />
+                          <a href={user.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                            LinkedIn
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button className="w-full mt-6" variant="outline">
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* Experience & Goals */}
+              <Card className="modern-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <GraduationCap className="w-5 h-5 mr-2" />
+                    Learning Profile
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="font-semibold mb-3">Experience Level</h3>
+                      <Badge className={getExperienceColor(experienceLevel)}>
+                        {experienceLevel.charAt(0).toUpperCase() + experienceLevel.slice(1)}
+                      </Badge>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-3">Time Commitment</h3>
+                      <div className="flex items-center text-muted-foreground">
+                        <Clock className="w-4 h-4 mr-2" />
+                        {getTimeCommitmentText(user.timeCommitment)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {interests.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-3">Areas of Interest</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {interests.map((interest: string) => (
+                          <Badge key={interest} variant="secondary">
+                            {interest}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {learningGoals.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-3">Learning Goals</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {learningGoals.map((goal: string) => (
+                          <Badge key={goal} variant="outline">
+                            <Target className="w-3 h-3 mr-1" />
+                            {goal}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Professional Info */}
+              {(user.currentRole || user.company || user.yearsOfExperience) && (
+                <Card className="modern-card">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Briefcase className="w-5 h-5 mr-2" />
+                      Professional Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {user.currentRole && (
+                        <div>
+                          <h3 className="font-semibold mb-2">Current Role</h3>
+                          <p className="text-muted-foreground">{user.currentRole}</p>
+                        </div>
+                      )}
+                      {user.company && (
+                        <div>
+                          <h3 className="font-semibold mb-2">Company</h3>
+                          <p className="text-muted-foreground">{user.company}</p>
+                        </div>
+                      )}
+                      {user.yearsOfExperience && (
+                        <div>
+                          <h3 className="font-semibold mb-2">Experience</h3>
+                          <p className="text-muted-foreground">{user.yearsOfExperience} years</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {skills.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold mb-3">Skills</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {skills.map((skill: string) => (
+                            <Badge key={skill} variant="secondary">
+                              <Code className="w-3 h-3 mr-1" />
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Progress & Achievements */}
+              <Card className="modern-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Progress & Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <div>
-                    <h1 className="text-3xl font-bold text-foreground mb-1">{user.name}</h1>
-                    <p className="text-muted-foreground mb-2">@{user.username}</p>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span className="flex items-center space-x-1">
-                        <Mail className="w-4 h-4" />
-                        <span>{user.email}</span>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">Level Progress</span>
+                      <span className="text-sm text-muted-foreground">
+                        Level {user.currentLevel || 1}
                       </span>
-                      <span className="flex items-center space-x-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{user.location}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>Joined {user.joinDate}</span>
-                      </span>
+                    </div>
+                    <Progress 
+                      value={((user.totalXP || 0) % 1000) / 10} 
+                      className="h-2"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {((user.totalXP || 0) % 1000)} / 1000 XP to next level
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">{user.totalXP || 0}</div>
+                      <div className="text-sm text-muted-foreground">Total XP</div>
+                    </div>
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <div className="text-2xl font-bold text-primary">{user.learningStreak || 0}</div>
+                      <div className="text-sm text-muted-foreground">Day Streak</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Info */}
+              <Card className="modern-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="w-5 h-5 mr-2" />
+                    Account Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">Email</h3>
+                      <div className="flex items-center text-muted-foreground">
+                        <Mail className="w-4 h-4 mr-2" />
+                        {user.email}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">Member Since</h3>
+                      <div className="flex items-center text-muted-foreground">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {new Date(user.joinDate).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
-                  <div className="flex items-center space-x-3 mt-4 md:mt-0">
-                    <Button variant="outline" size="sm">
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Edit Profile
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </Button>
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="flex items-center">
+                      <div className={`w-2 h-2 rounded-full mr-2 ${user.isEmailVerified ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <span className="text-sm">
+                        {user.isEmailVerified ? 'Email Verified' : 'Email Not Verified'}
+                      </span>
+                    </div>
+                    {!user.isEmailVerified && (
+                      <Button variant="outline" size="sm">
+                        Verify Email
+                      </Button>
+                    )}
                   </div>
-                </div>
-
-                <p className="text-muted-foreground mb-6 max-w-2xl">{user.bio}</p>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {[
-                    { label: "Projects", value: user.stats.projectsCompleted, icon: BookOpen },
-                    { label: "Badges", value: user.stats.skillBadges, icon: Award },
-                    { label: "Streak", value: `${user.stats.learningStreak} days`, icon: Target },
-                    { label: "XP", value: user.stats.totalXP, icon: Star },
-                    { label: "Rank", value: user.stats.rank, icon: TrendingUp, isText: true }
-                  ].map((stat, index) => (
-                    <div key={index} className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <stat.icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="text-xl font-bold text-foreground">{stat.value}</div>
-                      <div className="text-sm text-muted-foreground">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Main Content */}
-      <section className="pb-24 px-6">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Left Column - Badges & Learning Path */}
-            <div className="space-y-8">
-              
-              {/* Skill Badges */}
-              <div className="modern-card p-6 animate-slide-up">
-                <h3 className="text-xl font-semibold text-foreground mb-6 flex items-center">
-                  <Trophy className="w-5 h-5 mr-2" />
-                  Skill Badges
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {badges.map((badge, index) => (
-                    <div 
-                      key={index} 
-                      className="group cursor-pointer"
-                      title={`Earned ${badge.earned}`}
-                    >
-                      <div className="flex flex-col items-center p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-                        <div className={`w-12 h-12 ${badge.color} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                          <Award className="w-6 h-6 text-white" />
-                        </div>
-                        <span className="text-sm font-medium text-foreground text-center">{badge.name}</span>
-                        <span className="text-xs text-muted-foreground mt-1">{badge.earned}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Learning Progress */}
-              <div className="modern-card p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-                <h3 className="text-xl font-semibold text-foreground mb-6 flex items-center">
-                  <Target className="w-5 h-5 mr-2" />
-                  Learning Progress
-                </h3>
-                <div className="space-y-4">
-                  {learningPath.map((skill, index) => (
-                    <div key={index}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-foreground">{skill.skill}</span>
-                        <span className="text-xs text-muted-foreground">{skill.level}</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${getProgressColor(skill.progress)} transition-all duration-500`}
-                          style={{ width: `${skill.progress}%` }}
-                        />
-                      </div>
-                      <div className="text-right mt-1">
-                        <span className="text-xs text-muted-foreground">{skill.progress}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column - Projects */}
-            <div className="lg:col-span-2">
-              <div className="modern-card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-foreground flex items-center">
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    My Projects
-                  </h3>
-                  <Button variant="outline" size="sm">
-                    View All
-                  </Button>
-                </div>
-                
-                <div className="space-y-6">
-                  {projects.map((project, index) => (
-                    <div key={project.id} className="border border-border rounded-lg p-6 hover:bg-muted/30 transition-colors">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h4 className="text-lg font-semibold text-foreground mb-2 flex items-center">
-                            {project.title}
-                            <ExternalLink className="w-4 h-4 ml-2 text-muted-foreground hover:text-primary cursor-pointer" />
-                          </h4>
-                          <p className="text-muted-foreground mb-3">{project.description}</p>
-                          
-                          {/* Tech Stack */}
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {project.tech.map((tech) => (
-                              <span 
-                                key={tech}
-                                className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div className="text-right">
-                          <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                            project.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {project.status}
-                          </div>
-                          {project.score && (
-                            <div className="mt-2 text-sm text-muted-foreground">
-                              Score: <span className="font-semibold text-foreground">{project.score}/100</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <Separator className="my-4" />
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span className="flex items-center space-x-1">
-                            <Github className="w-4 h-4" />
-                            <span>View Code</span>
-                          </span>
-                          <span className="flex items-center space-x-1">
-                            <ExternalLink className="w-4 h-4" />
-                            <span>Live Demo</span>
-                          </span>
-                        </div>
-                        
-                        {project.score && (
-                          <div className="flex items-center space-x-2">
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm font-medium text-foreground">Excellent Work!</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
+      
+      <Footer />
     </div>
   );
 };

@@ -26,7 +26,22 @@ export const registerSchema = Joi.object({
     'string.min': 'Password must be at least 8 characters long',
     'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
     'any.required': 'Password is required'
-  })
+  }),
+  // Optional profile fields
+  bio: Joi.string().max(500).optional().allow(''),
+  location: Joi.string().max(100).optional().allow(''),
+  website: Joi.string().uri().optional().allow(''),
+  githubUrl: Joi.string().uri().optional().allow(''),
+  linkedinUrl: Joi.string().uri().optional().allow(''),
+  experienceLevel: Joi.string().valid('beginner', 'intermediate', 'advanced', 'expert').optional(),
+  interests: Joi.array().items(Joi.string()).optional(),
+  learningGoals: Joi.array().items(Joi.string()).optional(),
+  timeCommitment: Joi.string().valid('1-5', '5-10', '10-20', '20+').optional(),
+  currentRole: Joi.string().max(100).optional().allow(''),
+  company: Joi.string().max(100).optional().allow(''),
+  yearsOfExperience: Joi.string().valid('0-1', '1-3', '3-5', '5-10', '10+').optional(),
+  skills: Joi.array().items(Joi.string()).optional(),
+  agreeToNewsletter: Joi.boolean().optional()
 });
 
 export const loginSchema = Joi.object({

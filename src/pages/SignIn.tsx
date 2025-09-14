@@ -161,7 +161,7 @@ const SignIn = () => {
             <p className="text-muted-foreground">
               Don't have an account?{" "}
               <a href="/signup" className="text-primary hover:text-primary/80 font-semibold transition-colors">
-                Sign up
+                Create one now
               </a>
             </p>
           </div>

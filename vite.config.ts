@@ -35,7 +35,10 @@ export default defineConfig(({ mode }) => ({
           // Vendor chunks for better caching
           vendor: ["react", "react-dom"],
           router: ["react-router-dom"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-toast"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-toast", "@radix-ui/react-avatar", "@radix-ui/react-progress", "@radix-ui/react-select"],
+          icons: ["lucide-react"],
+          utils: ["axios", "socket.io-client"],
+          forms: ["react-hook-form", "@hookform/resolvers"],
           supabase: ["@supabase/supabase-js"],
           query: ["@tanstack/react-query"],
         },
@@ -52,6 +55,10 @@ export default defineConfig(({ mode }) => ({
       "react-router-dom",
       "@supabase/supabase-js",
       "@tanstack/react-query",
+      "lucide-react",
+      "axios",
+      "socket.io-client",
+      "sonner",
     ],
   },
 }));

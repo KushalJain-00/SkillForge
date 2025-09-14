@@ -14,6 +14,14 @@ interface User {
   website?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  experienceLevel?: string;
+  interests?: string[];
+  learningGoals?: string[];
+  timeCommitment?: string;
+  currentRole?: string;
+  company?: string;
+  yearsOfExperience?: string;
+  skills?: string[];
   role: string;
   totalXP: number;
   currentLevel: number;
@@ -41,6 +49,20 @@ interface RegisterData {
   firstName: string;
   lastName: string;
   password: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  experienceLevel?: string;
+  interests?: string[];
+  learningGoals?: string[];
+  timeCommitment?: string;
+  currentRole?: string;
+  company?: string;
+  yearsOfExperience?: string;
+  skills?: string[];
+  agreeToNewsletter?: boolean;
 }
 
 // Create context

@@ -42,6 +42,16 @@ model User {
   learningStreak Int @default(0)
   lastStreakDate DateTime?
   
+  // Extended Profile Data
+  experienceLevel   String?   @default("beginner")
+  interests         String[]  @default([])
+  learningGoals     String[]  @default([])
+  timeCommitment    String?
+  currentRole       String?
+  company           String?
+  yearsOfExperience String?
+  skills            String[]  @default([])
+  
   // Relations
   projects     Project[]
   enrollments  Enrollment[]

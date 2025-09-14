@@ -5,10 +5,11 @@ interface FeatureCardProps {
   title: string;
   description: string;
   gradient?: "primary" | "secondary" | "accent";
+  stats?: string;
   onClick?: () => void;
 }
 
-const FeatureCard = ({ icon: Icon, title, description, gradient = "primary", onClick }: FeatureCardProps) => {
+const FeatureCard = ({ icon: Icon, title, description, gradient = "primary", stats, onClick }: FeatureCardProps) => {
   const gradientClasses = {
     primary: "from-primary/20 to-primary-soft/30",
     secondary: "from-secondary/20 to-secondary-soft/30",
@@ -28,7 +29,12 @@ const FeatureCard = ({ icon: Icon, title, description, gradient = "primary", onC
         </div>
         
         <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-        <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed mb-3">{description}</p>
+        {stats && (
+          <div className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full inline-block">
+            {stats}
+          </div>
+        )}
       </div>
     </div>
   );

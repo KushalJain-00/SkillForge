@@ -11,6 +11,8 @@ import { Suspense, lazy, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import socketService from "@/lib/socket";
 import { useAuth } from "@/contexts/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import SEO from "@/components/SEO";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -20,6 +22,7 @@ const Projects = lazy(() => import("./pages/Projects"));
 const Community = lazy(() => import("./pages/Community"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const SignIn = lazy(() => import("./pages/SignIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -65,31 +68,35 @@ const App = () => (
       disableTransitionOnChange
     >
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <CustomCursor />
-          <Chatbot />
-          <BrowserRouter>
-            <SocketProvider>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/learn" element={<Learn />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/community" element={<Community />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/admin" element={<Admin />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </SocketProvider>
-          </BrowserRouter>
-        </TooltipProvider>
+        <ErrorBoundary>
+          <SEO />
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <CustomCursor />
+            <Chatbot />
+            <BrowserRouter>
+              <SocketProvider>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/learn" element={<Learn />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route path="/portfolio" element={<Portfolio />} />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/admin" element={<Admin />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </SocketProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ErrorBoundary>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>

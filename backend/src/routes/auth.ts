@@ -12,7 +12,27 @@ const router = express.Router();
 
 // Register
 router.post('/register', asyncHandler(async (req, res) => {
-  const { email, username, firstName, lastName, password } = validate(registerSchema, req.body);
+  const { 
+    email, 
+    username, 
+    firstName, 
+    lastName, 
+    password,
+    bio,
+    location,
+    website,
+    githubUrl,
+    linkedinUrl,
+    experienceLevel,
+    interests,
+    learningGoals,
+    timeCommitment,
+    currentRole,
+    company,
+    yearsOfExperience,
+    skills,
+    agreeToNewsletter
+  } = validate(registerSchema, req.body);
 
   // Check if user already exists
   const existingUser = await prisma.user.findFirst({
@@ -40,7 +60,20 @@ router.post('/register', asyncHandler(async (req, res) => {
       firstName,
       lastName,
       password: hashedPassword,
-      emailVerificationToken: uuidv4()
+      emailVerificationToken: uuidv4(),
+      bio,
+      location,
+      website,
+      githubUrl,
+      linkedinUrl,
+      experienceLevel,
+      interests: interests || [],
+      learningGoals: learningGoals || [],
+      timeCommitment,
+      currentRole,
+      company,
+      yearsOfExperience,
+      skills: skills || []
     },
     select: {
       id: true,
