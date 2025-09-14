@@ -48,7 +48,6 @@ services:
     name: skillforge-frontend
     env: static
     plan: starter
-    region: oregon
     buildCommand: npm install && npm run build:render
     staticPublishPath: ./dist
     routes:
@@ -66,6 +65,7 @@ services:
     name: skillforge-redis
     plan: starter
     region: oregon
+    ipAllowList: []
 
 # Database Services
 databases:
