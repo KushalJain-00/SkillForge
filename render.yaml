@@ -18,7 +18,7 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
-        value: https://skillforge-frontend.onrender.com
+        value: https://skillforge-7vcy.onrender.com
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
@@ -56,9 +56,9 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://skillforge-rdnd.onrender.com/api
+        value: https://skillforge-backend.onrender.com/api
       - key: VITE_SOCKET_URL
-        value: https://skillforge-rdnd.onrender.com
+        value: https://skillforge-backend.onrender.com
 
 # Database Services
 databases:
