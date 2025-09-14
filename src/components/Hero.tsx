@@ -1,27 +1,23 @@
-import HyperspeedBackground from "./HyperspeedBackground";
 import { ArrowRight, Play, Star, Users, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Hyperspeed Background */}
-      <HyperspeedBackground />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
+      {/* Simple gradient background instead of canvas */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-transparent" />
       
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-primary/20 via-secondary/15 to-transparent" />
-      
-      {/* Floating Elements */}
+      {/* Simple floating elements */}
       <div className="absolute inset-0 z-20">
-        <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float" style={{ animationDelay: "0s" }} />
-        <div className="absolute top-1/3 right-1/4 w-12 h-12 bg-white/10 rounded-lg rotate-45 animate-float" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-1/3 left-1/3 w-20 h-20 bg-white/5 rounded-full animate-float" style={{ animationDelay: "2s" }} />
+        <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-white/10 rounded-full" />
+        <div className="absolute top-1/3 right-1/4 w-12 h-12 bg-white/10 rounded-lg rotate-45" />
+        <div className="absolute bottom-1/3 left-1/3 w-20 h-20 bg-white/5 rounded-full" />
       </div>
 
       {/* Content */}
       <div className="relative z-30 text-center px-6 max-w-4xl mx-auto">
         {/* Stats Badge */}
-        <div className="inline-flex items-center space-x-4 glass px-4 py-2 rounded-full mb-8 animate-fade-in">
+        <div className="inline-flex items-center space-x-4 glass px-4 py-2 rounded-full mb-8">
           <div className="flex items-center space-x-1">
             <Users className="w-4 h-4 text-foreground" />
             <span className="text-sm font-medium text-foreground">10,000+ learners</span>
@@ -34,7 +30,7 @@ const Hero = () => {
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-slide-up">
+        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
           Master Skills
           <span className="block gradient-accent bg-clip-text text-transparent">
             Through Practice
@@ -42,13 +38,13 @@ const Hero = () => {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up" style={{ animationDelay: "0.2s" }}>
+        <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
           Join SkillForge, the interactive learning platform where you build real projects, 
           earn recognition, and connect with a community of passionate learners.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-slide-up" style={{ animationDelay: "0.4s" }}>
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
           <Button 
             size="lg" 
             className="glass hover:bg-white/20 border-white/30 text-white font-semibold px-8 py-4 transition-bounce group"
@@ -71,7 +67,7 @@ const Hero = () => {
         </div>
 
         {/* Feature Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-12 animate-fade-in" style={{ animationDelay: "0.6s" }}>
+        <div className="flex flex-wrap items-center justify-center gap-4 mt-12">
           {[
             { icon: BookOpen, text: "Interactive Lessons" },
             { icon: Users, text: "Peer Learning" },
