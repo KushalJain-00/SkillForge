@@ -56,9 +56,9 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://skillforge-txns.onrender.com/api
+        value: https://skillforge-rdnd.onrender.com/api
       - key: VITE_SOCKET_URL
-        value: https://skillforge-txns.onrender.com
+        value: https://skillforge-rdnd.onrender.com
 
 # Database Services
 databases:

@@ -67,13 +67,19 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://skillforge-frontend.onrender.com",
-  "https://skillforge-txns.onrender.com"
+  "https://skillforge-txns.onrender.com",
+  "https://skillforge-rdnd.onrender.com"
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
+    
+    // Allow all Render domains
+    if (origin && origin.includes('.onrender.com')) {
+      return callback(null, true);
+    }
     
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
