@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: skillforge-postgres
+    environment:
+      POSTGRES_DB: skillforge_db
+      POSTGRES_USER: skillforge_user
+      POSTGRES_PASSWORD: skillforge_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - skillforge-network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: skillforge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - skillforge-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Backend API
+  backend:
+    build: .
+    container_name: skillforge-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://skillforge_user:skillforge_password@postgres:5432/skillforge_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-here
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:5173
+      CLOUDINARY_CLOUD_NAME: your-cloud-name
+      CLOUDINARY_API_KEY: your-api-key
+      CLOUDINARY_API_SECRET: your-api-secret
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - skillforge-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: skillforge-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+    networks:
+      - skillforge-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  skillforge-network:
+    driver: bridge

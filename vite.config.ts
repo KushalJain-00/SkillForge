@@ -16,4 +16,34 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom"],
   },
+  build: {
+    // Optimize build for production
+    target: "esnext",
+    minify: "esbuild",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for better caching
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-toast"],
+          supabase: ["@supabase/supabase-js"],
+          query: ["@tanstack/react-query"],
+        },
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@supabase/supabase-js",
+      "@tanstack/react-query",
+    ],
+  },
 }));

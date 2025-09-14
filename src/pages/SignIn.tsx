@@ -3,22 +3,32 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight, BookOpen, Github } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await login(email, password);
+      toast.success("Welcome back!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast.error(error.message || "Login failed");
+    } finally {
       setIsLoading(false);
-      console.log("Sign in attempt:", { email, password });
-    }, 2000);
+    }
   };
 
   return (

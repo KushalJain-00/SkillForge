@@ -1,0 +1,409 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  firstName String
+  lastName  String
+  avatar    String?
+  bio       String?
+  location  String?
+  website   String?
+  githubUrl String?
+  linkedinUrl String?
+  
+  // Authentication
+  password  String
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String?
+  passwordResetToken String?
+  passwordResetExpires DateTime?
+  
+  // Profile
+  joinDate  DateTime @default(now())
+  lastActive DateTime @default(now())
+  isActive  Boolean @default(true)
+  role      UserRole @default(STUDENT)
+  
+  // Learning Stats
+  totalXP   Int @default(0)
+  currentLevel Int @default(1)
+  learningStreak Int @default(0)
+  lastStreakDate DateTime?
+  
+  // Relations
+  projects     Project[]
+  enrollments  Enrollment[]
+  badges       UserBadge[]
+  forumPosts   ForumPost[]
+  forumReplies ForumReply[]
+  projectLikes ProjectLike[]
+  projectComments ProjectComment[]
+  notifications Notification[]
+  achievements UserAchievement[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model LearningTrack {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  level       TrackLevel
+  duration    String // e.g., "8 weeks"
+  rating      Float @default(0)
+  totalStudents Int @default(0)
+  isPublished Boolean @default(false)
+  thumbnail   String?
+  
+  // Relations
+  modules     Module[]
+  enrollments Enrollment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("learning_tracks")
+}
+
+model Module {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  order       Int
+  duration    Int // in minutes
+  content     String? // Rich text content
+  videoUrl    String?
+  resources   Json? // Array of resource objects
+  
+  // Relations
+  trackId     String
+  track       LearningTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  progress    ModuleProgress[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("modules")
+}
+
+model Lesson {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  order       Int
+  duration    Int // in minutes
+  content     String // Rich text content
+  videoUrl    String?
+  resources   Json? // Array of resource objects
+  quiz        Json? // Quiz data
+  
+  // Relations
+  moduleId    String
+  module      Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress    LessonProgress[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("lessons")
+}
+
+model Project {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  content     String? // Rich text content
+  difficulty  ProjectDifficulty
+  technology  String[] // Array of technologies
+  tags        String[] // Array of tags
+  githubUrl   String?
+  liveUrl     String?
+  thumbnail   String?
+  isPublished Boolean @default(false)
+  isFeatured  Boolean @default(false)
+  
+  // Stats
+  likes       Int @default(0)
+  views       Int @default(0)
+  comments    Int @default(0)
+  rating      Float @default(0)
+  
+  // Relations
+  authorId    String
+  author      User @relation(fields: [authorId], references: [id])
+  likes       ProjectLike[]
+  comments    ProjectComment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model ProjectLike {
+  id        String @id @default(cuid())
+  userId    String
+  projectId String
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+  @@map("project_likes")
+}
+
+model ProjectComment {
+  id        String @id @default(cuid())
+  content   String
+  userId    String
+  projectId String
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("project_comments")
+}
+
+model ForumPost {
+  id          String @id @default(cuid())
+  title       String
+  content     String
+  category    String
+  tags        String[]
+  isSolved    Boolean @default(false)
+  isPinned    Boolean @default(false)
+  
+  // Stats
+  likes       Int @default(0)
+  views       Int @default(0)
+  replies     Int @default(0)
+  
+  // Relations
+  authorId    String
+  author      User @relation(fields: [authorId], references: [id])
+  replies     ForumReply[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("forum_posts")
+}
+
+model ForumReply {
+  id        String @id @default(cuid())
+  content   String
+  userId    String
+  postId    String
+  parentId  String? // For nested replies
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent    ForumReply? @relation("ReplyReplies", fields: [parentId], references: [id])
+  replies   ForumReply[] @relation("ReplyReplies")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("forum_replies")
+}
+
+model Badge {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  icon        String
+  color       String
+  category    BadgeCategory
+  requirements Json // Requirements to earn this badge
+  isActive    Boolean @default(true)
+  
+  // Relations
+  users       UserBadge[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model Enrollment {
+  id        String @id @default(cuid())
+  userId    String
+  trackId   String
+  progress  Float @default(0) // 0-100
+  isCompleted Boolean @default(false)
+  completedAt DateTime?
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     LearningTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  progress  ModuleProgress[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, trackId])
+  @@map("enrollments")
+}
+
+model ModuleProgress {
+  id        String @id @default(cuid())
+  userId    String
+  moduleId  String
+  enrollmentId String
+  progress  Float @default(0) // 0-100
+  isCompleted Boolean @default(false)
+  completedAt DateTime?
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module    Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, moduleId])
+  @@map("module_progress")
+}
+
+model LessonProgress {
+  id        String @id @default(cuid())
+  userId    String
+  lessonId  String
+  progress  Float @default(0) // 0-100
+  isCompleted Boolean @default(false)
+  completedAt DateTime?
+  timeSpent Int @default(0) // in minutes
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson    Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+model Notification {
+  id        String @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean @default(false)
+  data      Json? // Additional data
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model UserAchievement {
+  id        String @id @default(cuid())
+  userId    String
+  type      AchievementType
+  title     String
+  description String
+  points    Int
+  data      Json? // Additional achievement data
+  
+  // Relations
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@map("user_achievements")
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum TrackLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ProjectDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum BadgeCategory {
+  LEARNING
+  PROJECT
+  COMMUNITY
+  ACHIEVEMENT
+  SPECIAL
+}
+
+enum NotificationType {
+  ACHIEVEMENT
+  BADGE_EARNED
+  PROJECT_LIKED
+  PROJECT_COMMENTED
+  FORUM_REPLY
+  COURSE_UPDATE
+  SYSTEM
+}
+
+enum AchievementType {
+  XP_MILESTONE
+  STREAK_MILESTONE
+  PROJECT_COMPLETED
+  COURSE_COMPLETED
+  COMMUNITY_CONTRIBUTOR
+  FIRST_PROJECT
+  PERFECT_SCORE
+  SPEED_LEARNER
+}
