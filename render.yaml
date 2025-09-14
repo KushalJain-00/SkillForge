@@ -61,13 +61,14 @@ services:
       - key: VITE_SOCKET_URL
         value: https://skillforge-backend.onrender.com
 
-# Database Services
-databases:
-  - name: skillforge-db
+  # Redis Service
+  - type: redis
+    name: skillforge-redis
     plan: starter
     region: oregon
 
-  - name: skillforge-redis
-    type: redis
+# Database Services
+databases:
+  - name: skillforge-db
     plan: starter
     region: oregon
