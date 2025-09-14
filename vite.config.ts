@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Allow all hosts for production builds
+    allowedHosts: "all",
+  },
+  preview: {
+    host: "::",
+    port: 10000,
+    // Allow all hosts for preview mode (used by Render)
+    allowedHosts: "all",
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
