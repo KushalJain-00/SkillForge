@@ -43,9 +43,10 @@ services:
           name: skillforge-redis
           property: connectionString
 
-  # Frontend Static Site
-  - type: static
+  # Frontend Web Service (Static Site)
+  - type: web
     name: skillforge-frontend
+    env: static
     plan: starter
     region: oregon
     buildCommand: npm install && npm run build:render
